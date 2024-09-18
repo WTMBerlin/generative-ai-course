@@ -47,8 +47,11 @@ You will not receive a certificate if you miss one of the workshops.
 **Q. I'm a junior developer. Can I join this course?**  
 A. The course is designed for software engineers who know how to work with third-party REST APIs—either on a mobile app, a backend app, or a frontend app. If you have the experience to keep up with that and focus your learning solely on AI, this course is definitely for you.
 
+**Q. What kind of certificate will be issued?**
+A. We will be issuing electronically signed digital certificates of successful completion as Coyotiv School of Software Engineering for people who do a demo of their applications at the end of the course and attended all workshops. 
+
 **Q. What do I need to receive my certificate?**  
-To receive your certificate, you must attend all four workshops and present your final project.
+A. To receive your certificate, you must attend all four workshops and present your final project at the end of the course.
 
 **Q. When are the workshops?**  
 A. The course runs every Monday in October from 18:30 to 21:30
@@ -57,6 +60,8 @@ A. The course runs every Monday in October from 18:30 to 21:30
 - Monday 21 October from 18:30 to 21:30
 - Monday 28 October from 18:30 to 21:30
 
+**Q. Is this course only for women**
+A. Everyone is welcome. Women Techmakers Berlin community is always open and inclusive to people of all backgrounds, regardless of gender, age, race, expertise, etc.
 
 ## Slack - our communication channel
 
