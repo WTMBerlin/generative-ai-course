@@ -2,7 +2,7 @@
 
 Unlock your potential in the world of technology with our 4-week Generative AI course, designed exclusively for our Women Techmakers community. Whether you're a seasoned developer or in the middle of your tech journey, this course offers hands-on experience with cutting-edge AI tools and techniques that are revolutionizing industries. You'll not only master the fundamentals of generative AI but also gain practical skills to create innovative solutions. Join a vibrant community of like-minded women, expand your network, and position yourself at the forefront of AI innovation.
 
-❤ WTM Berlin community is always open and inclusive to people of all backgrounds, regardless of gender, age, race, expertise, etc - everyone is welcome ❤
+🖤 Women Techmakers Berlin community is always open and inclusive to people of all backgrounds, regardless of gender, age, race, expertise, etc - everyone is welcome 🖤
 
 We expect all community participants (contributors, paid or otherwise; sponsors; and other guests) to abide by the [Berlin Code of Conduct](https://berlincodeofconduct.org/).
 
@@ -11,7 +11,7 @@ We expect all community participants (contributors, paid or otherwise; sponsors;
 
 First of all, welcome to the first Women Techmakers Berlin - Generative AI Course! This is going to be a challenging but exciting journey to getting started in the Generative AI world.
 
-This guide covers all the steps needed to prepare for the workshops. Please ensure you have all the tools installed and ready to go before starting the course.
+This guide covers all the information needed to prepare for the workshops. Please ensure you have all the tools installed and ready to go before starting the course.
 
 > You might feel a bit overwhelmed sometimes, especially if it is the first time you are hearing about some of these tools and concepts. Please bear with us! :bear: Just try to get the main concept, and use the community to get help, sharing any doubts or problems you encounter during the process
 
@@ -44,10 +44,13 @@ A. Yes, participants should bring their laptops with them to their preferred wor
 A. We do not recommend skipping the workshops. This is an intense course, and missing one will heavily impact your ability to complete your final project.  
 You will not receive a certificate if you miss one of the workshops.
 
+**Q. How many hours do I need to commit?**  
+A. You will commit to 3 hours for the live workshop every Monday and another 3 to 8 hours through the week outside the workshop to work on your project.
+
 **Q. I'm a junior developer. Can I join this course?**  
 A. The course is designed for software engineers who know how to work with third-party REST APIs—either on a mobile app, a backend app, or a frontend app. If you have the experience to keep up with that and focus your learning solely on AI, this course is definitely for you.
 
-**Q. What kind of certificate will be issued?**
+**Q. What kind of certificate will be issued?**  
 A. We will be issuing electronically signed digital certificates of successful completion as Coyotiv School of Software Engineering for people who do a demo of their applications at the end of the course and attended all workshops. 
 
 **Q. What do I need to receive my certificate?**  
@@ -60,18 +63,21 @@ A. The course runs every Monday in October from 18:30 to 21:30
 - Monday 21 October from 18:30 to 21:30
 - Monday 28 October from 18:30 to 21:30
 
-**Q. Is this course only for women**
-A. Everyone is welcome. Women Techmakers Berlin community is always open and inclusive to people of all backgrounds, regardless of gender, age, race, expertise, etc.
+**Q. Is this course only for women?**  
+A. No. Everyone is welcome.  
+Women Techmakers Berlin organizes events focused in women and FLINTA folks, but we are a community always open and inclusive to people of all backgrounds, regardless of gender, age, race, expertise, etc. - everyone is welcome.
+
 
 ## Slack - our communication channel
 
-[Slack](https://slack.com/intl/en-de/) is the messaging tool that we use to communicate during the course: [macOS Download](https://slack.com/intl/en-de/downloads/mac) | [Windows download](https://slack.com/intl/en-de/downloads/windows).
+Slack is the messaging tool that we use to communicate during the course.
 
-Important :speaker:: Get your personal invite to our WTM Berlin slack workspace by typing your email [here](https://slack.wtmberlin.com/).
+Important :speaker:: Get your personal invite to our WTM Berlin slack workspace by typing your email [here](https://slack.wtm.berlin/).
 
 On our`#generative-ai-course`channel you will be able to ask questions, get support and share the link of your homework so we can review it and give you feedback. If you cannot see it on the left menu of the slack app under **Channels**, you can search for it after clicking on the title.
 
 
 ## Development environment
 
-
+You don't need to install anything specific, just having your usual app development environment is enough.  
+You should be ready to go developing your apps, whether it’s backend, frontend, or mobile.
