@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File-based Assistant</title>
+    <title>Ask Questions - PDF Assistant</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -33,7 +33,7 @@
             margin-top: 20px;
         }
 
-        textarea, input[type="file"] {
+        textarea {
             width: 100%;
             padding: 15px;
             margin-top: 10px;
@@ -79,7 +79,7 @@
             text-align: justify;
         }
 
-        textarea:focus, input[type="file"]:focus {
+        textarea:focus {
             border-color: #4CAF50;
             outline: none;
         }
@@ -87,11 +87,9 @@
 </head>
 <body>
 
-    <h1>Ask Questions</h1>
+    <h1>Ask Questions to the PDF Assistant</h1>
 
     <div id="container">
-        <input type="file" id="fileInput" accept=".pdf" />
-
         <textarea id="questionInput" rows="4" placeholder="Type your question..."></textarea>
         <button id="submitBtn">Submit</button>
 
@@ -99,30 +97,6 @@
     </div>
 
     <script>
-        document.getElementById('fileInput').addEventListener('change', async (event) => {
-            const formData = new FormData();
-            const file = event.target.files[0];
-
-            if (!file) {
-                alert('Please select a PDF file to upload.');
-                return;
-            }
-
-            formData.append('file', file);
-
-            const res = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                alert('Error uploading file: ' + data.message);
-            } else {
-                alert('File uploaded successfully.');
-            }
-        });
-
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const question = document.getElementById('questionInput').value;
             const responseDiv = document.getElementById('response');
@@ -145,7 +119,6 @@
             `;
             
             responseDiv.scrollTop = responseDiv.scrollHeight;
-
             document.getElementById('questionInput').value = '';
         });
     </script>
