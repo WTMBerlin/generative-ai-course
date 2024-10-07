@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File-based Assistant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: #4CAF50;
+        }
+
+        #container {
+            width: 60%;
+            max-width: 900px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #submitBtn {
+            padding: 12px 20px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitBtn:hover {
+            background-color: #45a049;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 1.1rem;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: justify;
+        }
+
+        .answer {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        textarea:focus, input[type="file"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Ask Questions</h1>
+
+    <div id="container">
+        <input type="file" id="fileInput" accept=".pdf" />
+
+        <textarea id="questionInput" rows="4" placeholder="Type your question..."></textarea>
+        <button id="submitBtn">Submit</button>
+
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', async (event) => {
+            const formData = new FormData();
+            const file = event.target.files[0];
+
+            if (!file) {
+                alert('Please select a PDF file to upload.');
+                return;
+            }
+
+            formData.append('file', file);
+
+            const res = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.error) {
+                alert('Error uploading file: ' + data.message);
+            } else {
+                alert('File uploaded successfully.');
+            }
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const question = document.getElementById('questionInput').value;
+            const responseDiv = document.getElementById('response');
+
+            if (!question) {
+                alert('Please enter a question.');
+                return;
+            }
+
+            const res = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await res.json();
+            responseDiv.innerHTML += `
+                <div class="question"><strong>Q:</strong> ${question}</div>
+                <div class="answer"><strong>Answer:</strong> ${data.answer}</div>
+            `;
+            
+            responseDiv.scrollTop = responseDiv.scrollHeight;
+
+            document.getElementById('questionInput').value = '';
+        });
+    </script>
+
+</body>
+</html>

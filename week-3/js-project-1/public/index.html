@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Answering System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #eee;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #container {
+            background-color: #1f1f1f;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 700px;
+            text-align: justify;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #questionInput {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #submitBtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitBtn:hover {
+            background-color: #45a049;
+        }
+
+        #responseContainer {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        #response {
+            font-size: 1.2rem;
+            color: #eee;
+            white-space: pre-wrap;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        .answer {
+            margin-bottom: 20px;
+        }
+        .answer p {
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Ask a Question</h1>
+        <textarea id="questionInput" placeholder="Enter your question..." rows="4" cols="50"></textarea>
+        <br><br>
+        <button id="submitBtn">Submit</button>
+        <div id="responseContainer">
+            <div id="response"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const question = document.getElementById('questionInput').value;
+            const responseDiv = document.getElementById('response');
+
+            if (!question) {
+                alert('Please enter a question.');
+                return;
+            }
+
+            responseDiv.innerHTML += `<div class="question">Q: ${question}</div>`;
+
+            document.getElementById('questionInput').value = '';
+
+            try {
+                const res = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question }),
+                });
+                const data = await res.json();
+                responseDiv.innerHTML += `<div class="answer"><strong>Answer:</strong><p>${data.answer}</p></div>`;
+
+                document.getElementById('responseContainer').scrollTop = document.getElementById('responseContainer').scrollHeight;
+            } catch (error) {
+                responseDiv.innerHTML += `<div class="answer">Error getting answer.</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
