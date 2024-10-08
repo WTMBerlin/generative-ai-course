@@ -1,48 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Song Generator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        input {
-            margin: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #lyrics {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-        }
-        #voiceOverButton {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            display: none;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      input {
+        margin: 5px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #lyrics {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        white-space: pre-wrap;
+      }
+      #voiceOverButton {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Song Generator</h1>
     <p>Enter 5 words to generate a song:</p>
-    <input type="text" id="word1" placeholder="Word 1">
-    <input type="text" id="word2" placeholder="Word 2">
-    <input type="text" id="word3" placeholder="Word 3">
-    <input type="text" id="word4" placeholder="Word 4">
-    <input type="text" id="word5" placeholder="Word 5">
-    <br>
+    <input type="text" id="word1" placeholder="Word 1" />
+    <input type="text" id="word2" placeholder="Word 2" />
+    <input type="text" id="word3" placeholder="Word 3" />
+    <input type="text" id="word4" placeholder="Word 4" />
+    <input type="text" id="word5" placeholder="Word 5" />
+    <br />
     <button onclick="generateSong()">Generate Song</button>
     <button id="voiceOverButton" onclick="voiceOverLyrics()">Voice Over</button>
 
@@ -50,62 +50,61 @@
     <div id="lyrics"></div>
 
     <script>
-        let generatedLyrics = ''; 
+      let generatedLyrics = ''
 
-        async function generateSong() {
-            const word1 = document.getElementById('word1').value;
-            const word2 = document.getElementById('word2').value;
-            const word3 = document.getElementById('word3').value;
-            const word4 = document.getElementById('word4').value;
-            const word5 = document.getElementById('word5').value;
+      async function generateSong() {
+        const word1 = document.getElementById('word1').value
+        const word2 = document.getElementById('word2').value
+        const word3 = document.getElementById('word3').value
+        const word4 = document.getElementById('word4').value
+        const word5 = document.getElementById('word5').value
 
-            if (!word1 || !word2 || !word3 || !word4 || !word5) {
-                alert('Please enter all 5 words!');
-                return;
-            }
-
-            const response = await fetch('/generate-song', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ words: [word1, word2, word3, word4, word5] }),
-            });
-
-            const data = await response.json();
-            if (data.error) {
-                document.getElementById('lyrics').textContent = 'Error generating song: ' + data.error;
-            } else {
-                generatedLyrics = data.lyrics; 
-                document.getElementById('lyrics').textContent = data.lyrics;
-                document.getElementById('voiceOverButton').style.display = 'inline'; 
-            }
+        if (!word1 || !word2 || !word3 || !word4 || !word5) {
+          alert('Please enter all 5 words!')
+          return
         }
 
-        async function voiceOverLyrics() {
-          
-            if (!generatedLyrics) {
-                alert('No song lyrics to voice over!');
-                return;
-            }
+        const response = await fetch('/generate-song', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ words: [word1, word2, word3, word4, word5] }),
+        })
 
-            const response = await fetch('/voice-over', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ lyrics: generatedLyrics }),
-            });
-
-            const data = await response.json();
-            if (data.audioUrl) {
-                const audioPlayer = document.createElement('audio');
-                audioPlayer.src = data.audioUrl;
-                audioPlayer.controls = true;
-                document.body.appendChild(audioPlayer);
-                audioPlayer.play();
-            }
+        const data = await response.json()
+        if (data.error) {
+          document.getElementById('lyrics').textContent = 'Error generating song: ' + data.error
+        } else {
+          generatedLyrics = data.lyrics
+          document.getElementById('lyrics').textContent = data.lyrics
+          document.getElementById('voiceOverButton').style.display = 'inline'
         }
+      }
+
+      async function voiceOverLyrics() {
+        if (!generatedLyrics) {
+          alert('No song lyrics to voice over!')
+          return
+        }
+
+        const response = await fetch('/voice-over', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ lyrics: generatedLyrics }),
+        })
+
+        const data = await response.json()
+        if (data.audioUrl) {
+          const audioPlayer = document.createElement('audio')
+          audioPlayer.src = data.audioUrl
+          audioPlayer.controls = true
+          document.body.appendChild(audioPlayer)
+          audioPlayer.play()
+        }
+      }
     </script>
-</body>
+  </body>
 </html>
