@@ -4,11 +4,11 @@ This is a Node.js application that answers questions using the OpenAI gpt-4o-min
 ### Installation
 - Clone the repository:
 ```
-git clone https://github.com/HilalKocak/gen-ai.git
+git clone https://github.com/WTMBerlin/generative-ai-course.git
 ```
 - Go to the project directory:
 ```
-cd week1/js-project-2
+cd week1/js-project-2-gpt-assistants-app
 ```
 - Install dependencies
 ```
