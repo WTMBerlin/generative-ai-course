@@ -41,7 +41,7 @@ async function createAssistant() {
     name: "File-based Assistant",
     instructions:
       "You are an assistant that answers questions based on the uploaded PDF file.",
-    model: "gpt-4-turbo-preview",
+    model: "gpt-4o-mini",
     tools: [{ type: "file_search" }],
   });
   assistantId = assistant.id;
