@@ -7,11 +7,11 @@ This is a simple command-line application that uses OpenAI's GPT model to answer
 
 - Clone the repository:
 ```
-git clone https://github.com/HilalKocak/gen-ai.git
+git clone https://github.com/WTMBerlin/generative-ai-course.git
 ```
 - Go to the project directory:
 ```
-cd week1/py-project-2
+cd week1/py-project-1-question-answering-app
 ```
 - Create and activate a virtual environment:
 ```

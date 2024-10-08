@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Assistant</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      h1 {
+        color: #4caf50;
+      }
+      #container {
+        width: 80%;
+        max-width: 800px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      textarea,
+      input[type='file'],
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #response {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-size: 1.1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ask Your Assistant</h1>
+
+    <div id="container">
+      <input type="file" id="fileInput" accept=".pdf" />
+      <textarea id="questionInput" rows="4" placeholder="Ask a question..."></textarea>
+      <button id="submitBtn">Submit</button>
+
+      <div id="response"></div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById('fileInput')
+      const questionInput = document.getElementById('questionInput')
+      const submitBtn = document.getElementById('submitBtn')
+      const responseDiv = document.getElementById('response')
+
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0]
+        if (!file) {
+          alert('Please select a PDF file.')
+          return
+        }
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const res = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const data = await res.json()
+        if (data.error) {
+          alert('Error uploading file: ' + data.error)
+        } else {
+          alert('File uploaded successfully')
+        }
+      })
+
+      submitBtn.addEventListener('click', async () => {
+        const question = questionInput.value.trim()
+        if (!question) {
+          alert('Please enter a question.')
+          return
+        }
+
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question }),
+        })
+
+        const data = await res.json()
+        if (data.error) {
+          responseDiv.textContent = 'Error: ' + data.error
+        } else {
+          responseDiv.innerHTML += `<div><strong>Q:</strong> ${question}</div>`
+          responseDiv.innerHTML += `<div><strong>A:</strong> ${data.answer}</div>`
+          questionInput.value = ''
+          responseDiv.scrollTop = responseDiv.scrollHeight
+        }
+      })
+    </script>
+  </body>
+</html>

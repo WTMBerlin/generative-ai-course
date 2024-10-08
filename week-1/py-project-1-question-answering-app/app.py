@@ -4,16 +4,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 def ask_question(question):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  
-            messages=[{"role": "user", "content": question}], 
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": question}],
             max_tokens=100,
         )
-        answer = response['choices'][0]['message']['content'].strip()
+        answer = response["choices"][0]["message"]["content"].strip()
         return answer
     except Exception as e:
         return f"An error occurred: {str(e)}"
