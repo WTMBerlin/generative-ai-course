@@ -1,6 +1,5 @@
-## Question Answering API
-This is a Node.js application that answers questions using the OpenAI gpt-4o-mini model.
-
+## GPT Assistants
+This is a Node.js application that answers questions using the OpenAI GPT-4 Turbo model and GPT assistants. The assistant is designed to answer questions based on the content of an uploaded PDF file. The file content is processed and stored in a vectorized format, enabling efficient document search and question answering.
 ### Installation
 - Clone the repository:
 ```
