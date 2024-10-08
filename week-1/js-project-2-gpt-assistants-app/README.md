@@ -1,5 +1,5 @@
-## GPT Assistants
-This is a Node.js application that answers questions using the OpenAI GPT-4 Turbo model and GPT assistants. The assistant is designed to answer questions based on the content of an uploaded PDF file. The file content is processed and stored in a vectorized format, enabling efficient document search and question answering.
+## GPT Assistants: File Search
+This project implements an assistant using OpenAI that answers questions based on the content of a PDF file uploaded by the user through their browser. The assistant processes the PDF, stores it in a vector store, and allows the user to ask questions related to the PDF content.
 ### Installation
 - Clone the repository:
 ```
