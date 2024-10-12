@@ -1,126 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PDF Assistant</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f7f6;
-        color: #333;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-      }
-      h1 {
-        color: #4caf50;
-      }
-      #container {
-        width: 80%;
-        max-width: 800px;
-        padding: 20px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      textarea,
-      input[type='file'],
-      button {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        font-size: 1rem;
-      }
-      button {
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      #response {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        max-height: 300px;
-        overflow-y: auto;
-        font-size: 1.1rem;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Ask Your Assistant</h1>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    #container {
+      width: 80%;
+      max-width: 800px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    textarea, input[type="file"], button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #response {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 1.1rem;
+    }
+    .qna {
+      margin-bottom: 15px;
+    }
+    .qna:last-child {
+      background-color: #e8f5e9; 
+    }
+    .qna div {
+      margin-bottom: 5px;
+    }
+    .qna .question {
+      font-weight: bold;
+      font-size: 1.2rem; 
+    }
+    .qna .answer {
+      margin-left: 10px; 
+    }
+    #fileStatus {
+      color: #4CAF50;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
 
-    <div id="container">
-      <input type="file" id="fileInput" accept=".pdf" />
-      <textarea id="questionInput" rows="4" placeholder="Ask a question..."></textarea>
-      <button id="submitBtn">Submit</button>
+  <h1>Ask Your Assistant</h1>
 
-      <div id="response"></div>
-    </div>
+  <div id="container">
+    <input type="file" id="fileInput" accept=".pdf">
+    <div id="fileStatus"></div>
+    <textarea id="questionInput" rows="4" placeholder="Ask a question..." value="What are the sections of worksheet"></textarea>
+    <button id="submitBtn" disabled>Submit</button>
 
-    <script>
-      const fileInput = document.getElementById('fileInput')
-      const questionInput = document.getElementById('questionInput')
-      const submitBtn = document.getElementById('submitBtn')
-      const responseDiv = document.getElementById('response')
+    <div id="response"></div>
+  </div>
 
-      fileInput.addEventListener('change', async () => {
-        const file = fileInput.files[0]
-        if (!file) {
-          alert('Please select a PDF file.')
-          return
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const questionInput = document.getElementById('questionInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const responseDiv = document.getElementById('response');
+    const fileStatus = document.getElementById('fileStatus');
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please select a PDF file.');
+        submitBtn.disabled = true; 
+        return;
+      }
+      
+      fileStatus.textContent = 'Dosya yükleniyor...'; 
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      fileStatus.textContent = ''; 
+
+      if (data.error) {
+        alert('Error uploading file: ' + data.error);
+        submitBtn.disabled = true; 
+      } else {
+        alert('File uploaded successfully');
+        submitBtn.disabled = false; 
+      }
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const question = questionInput.value.trim();
+      if (!question) {
+        alert('Please enter a question.');
+        return;
+      }
+
+      responseDiv.textContent = 'Loading...'; 
+
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+
+      const data = await res.json();
+      responseDiv.textContent = ''; 
+
+      if (data.error) {
+        responseDiv.textContent = 'Error: ' + data.error;
+      } else {
+        const newQna = document.createElement('div');
+        newQna.classList.add('qna');
+
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `<strong>Q:</strong> ${question}`;
+
+        const answerDiv = document.createElement('div');
+        answerDiv.classList.add('answer');
+
+        answerDiv.innerHTML = '';
+        if (data.answers && data.answers.length > 0) {
+          const uniqueAnswers = [...new Set(data.answers)];  
+          answerDiv.innerHTML = `<strong>A:</strong> ${uniqueAnswers.join('<br><br>')}`;
         }
 
-        const formData = new FormData()
-        formData.append('file', file)
+        newQna.appendChild(questionDiv);
+        newQna.appendChild(answerDiv);
 
-        const res = await fetch('/upload', {
-          method: 'POST',
-          body: formData,
-        })
+        const previousQna = responseDiv.querySelectorAll('.qna');
+        previousQna.forEach(qna => qna.classList.remove('last'));
 
-        const data = await res.json()
-        if (data.error) {
-          alert('Error uploading file: ' + data.error)
-        } else {
-          alert('File uploaded successfully')
-        }
-      })
+        newQna.classList.add('last');
 
-      submitBtn.addEventListener('click', async () => {
-        const question = questionInput.value.trim()
-        if (!question) {
-          alert('Please enter a question.')
-          return
-        }
+        responseDiv.appendChild(newQna);
 
-        const res = await fetch('/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question }),
-        })
+        questionInput.value = '';
 
-        const data = await res.json()
-        if (data.error) {
-          responseDiv.textContent = 'Error: ' + data.error
-        } else {
-          responseDiv.innerHTML += `<div><strong>Q:</strong> ${question}</div>`
-          responseDiv.innerHTML += `<div><strong>A:</strong> ${data.answer}</div>`
-          questionInput.value = ''
-          responseDiv.scrollTop = responseDiv.scrollHeight
-        }
-      })
-    </script>
-  </body>
+        responseDiv.scrollTop = responseDiv.scrollHeight;
+      }
+    });
+
+  </script>
+
+</body>
 </html>
