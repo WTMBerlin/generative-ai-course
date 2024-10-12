@@ -1,6 +1,6 @@
-## OpenAI Question Answering CLI Application
+## Weather Assistant Using Function Calling
 
-This is a simple command-line application that uses OpenAI's GPT model to answer questions based on user input. The application sends the user's question to the OpenAI API and prints out the response.
+This project is a simple weather assistant built using the OpenAI gpt-4o-mini model with function calling capabilities. The assistant provides answers to weather-related questions, specifically the current temperature and the probability of rain for a given location. This assistant uses custom functions (getCurrentTemperature and getRainProbability) to simulate fetching weather data.
 
 ### Requirements:
 
@@ -17,7 +17,7 @@ git clone https://github.com/WTMBerlin/generative-ai-course.git
 - Go to the project directory:
 
 ```
-cd week-1/py-project-1-question-answering-app
+cd week-1/py-project-3-function-calling
 ```
 
 - Create and activate a virtual environment:

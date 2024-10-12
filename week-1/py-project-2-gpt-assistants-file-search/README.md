@@ -17,7 +17,7 @@ git clone https://github.com/WTMBerlin/generative-ai-course.git
 - Go to the project directory:
 
 ```
-cd week1/py-project-2-gpt-assistants-file-search
+cd week-1/py-project-2-gpt-assistants-file-search
 ```
 
 - Create and activate a virtual environment:
