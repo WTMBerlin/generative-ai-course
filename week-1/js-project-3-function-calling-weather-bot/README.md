@@ -13,7 +13,7 @@ git clone https://github.com/HilalKocak/gen-ai.git
 - Go to the project directory:
 
 ```
-cd week-1/js-project-3-function-calling
+cd week-1/js-project-3-function-calling-weather-bot
 ```
 
 - Install dependencies

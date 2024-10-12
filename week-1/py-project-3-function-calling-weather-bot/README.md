@@ -17,7 +17,7 @@ git clone https://github.com/WTMBerlin/generative-ai-course.git
 - Go to the project directory:
 
 ```
-cd week-1/py-project-3-function-calling
+cd week-1/py-project-3-function-calling-weather-bot
 ```
 
 - Create and activate a virtual environment:
