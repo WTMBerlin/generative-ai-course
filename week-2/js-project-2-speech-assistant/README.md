@@ -91,3 +91,7 @@ node app.js
 ## Test the app
 
 With the development server running, call the phone number you purchased in the **Prerequisites**. After the introduction, you should be able to talk to the AI Assistant. Call the number that obtained from Twilio, start talking with your Speech Assistant!
+
+## License
+
+This project includes code from [Twilio Speech Assistant OpenAI Realtime API](https://github.com/twilio-samples/speech-assistant-openai-realtime-api-node) which is licensed under the [MIT License](https://github.com/twilio-samples/speech-assistant-openai-realtime-api-node/blob/main/LICENSE).
