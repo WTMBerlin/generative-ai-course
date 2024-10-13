@@ -7,7 +7,7 @@ This project is a simple weather assistant built using the OpenAI GPT-4 model wi
 - Clone the repository:
 
 ```
-git clone https://github.com/HilalKocak/gen-ai.git
+git clone https://github.com/WTMBerlin/generative-ai-course.git
 ```
 
 - Go to the project directory:
