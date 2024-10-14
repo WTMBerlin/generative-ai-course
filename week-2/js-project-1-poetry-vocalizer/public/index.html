@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Song Generator</title>
+    <title>Poetry Vocalizer</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -35,24 +35,24 @@
     </style>
   </head>
   <body>
-    <h1>Song Generator</h1>
-    <p>Enter 5 words to generate a song:</p>
+    <h1>Poetry Vocalizer</h1>
+    <p>Enter 5 words to generate a poetry:</p>
     <input type="text" id="word1" placeholder="Word 1" />
     <input type="text" id="word2" placeholder="Word 2" />
     <input type="text" id="word3" placeholder="Word 3" />
     <input type="text" id="word4" placeholder="Word 4" />
     <input type="text" id="word5" placeholder="Word 5" />
     <br />
-    <button onclick="generateSong()">Generate Song</button>
+    <button onclick="generatePoetry()">Generate Poetry</button>
     <button id="voiceOverButton" onclick="voiceOverLyrics()">Voice Over</button>
 
-    <h2>Generated Song Lyrics:</h2>
+    <h2>Generated Poetry Lyrics:</h2>
     <div id="lyrics"></div>
 
     <script>
       let generatedLyrics = ''
 
-      async function generateSong() {
+      async function generatePoetry() {
         const word1 = document.getElementById('word1').value
         const word2 = document.getElementById('word2').value
         const word3 = document.getElementById('word3').value
@@ -64,7 +64,7 @@
           return
         }
 
-        const response = await fetch('/generate-song', {
+        const response = await fetch('/generate-poetry', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -74,7 +74,7 @@
 
         const data = await response.json()
         if (data.error) {
-          document.getElementById('lyrics').textContent = 'Error generating song: ' + data.error
+          document.getElementById('lyrics').textContent = 'Error generating poetry: ' + data.error
         } else {
           generatedLyrics = data.lyrics
           document.getElementById('lyrics').textContent = data.lyrics
@@ -84,7 +84,7 @@
 
       async function voiceOverLyrics() {
         if (!generatedLyrics) {
-          alert('No song lyrics to voice over!')
+          alert('No poetry lyrics to voice over!')
           return
         }
 

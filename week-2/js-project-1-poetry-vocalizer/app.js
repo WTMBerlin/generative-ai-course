@@ -10,16 +10,18 @@ app.use(express.json())
 app.use(express.static('public'))
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY
-const VOICE_ID = 'YOUR_VOICE_ID' // or use premade voices in elevenlabs like CwhRBWXzGAHq8TQ4Fs17
+const VOICE_ID = 'XB0fDUnXU5powFXDhCwa' // or use premade voices in elevenlabs like CwhRBWXzGAHq8TQ4Fs17
 
-app.post('/generate-song', async (req, res) => {
+app.post('/generate-poetry', async (req, res) => {
   const { words } = req.body
 
   if (!words || words.length !== 5) {
     return res.status(400).json({ error: 'Please provide exactly 5 words.' })
   }
 
-  const prompt = `Write a poem with two verse that includes the following words: ${words.join(', ')}. Each verse should be about 4-6 lines and creatively incorporate the words provided. Do not add additional words like verse except poetry`
+  const prompt = `Write a poem with two verse that includes the following words: ${words.join(
+    ', '
+  )}. Each verse should be about 4-6 lines and creatively incorporate the words provided. Do not add additional words like verse except poetry`
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -43,8 +45,8 @@ app.post('/generate-song', async (req, res) => {
       return res.status(500).json({ error: 'Invalid response from OpenAI API.' })
     }
   } catch (error) {
-    console.error('Error generating song:', error)
-    return res.status(500).json({ error: 'Failed to generate song.' })
+    console.error('Error generating poetry:', error)
+    return res.status(500).json({ error: 'Failed to generate poetry.' })
   }
 })
 
@@ -73,7 +75,7 @@ app.post('/voice-over', async (req, res) => {
           'Content-Type': 'application/json',
         },
         responseType: 'arraybuffer',
-      },
+      }
     )
 
     const filePath = './public/generated_audio.mp3'
