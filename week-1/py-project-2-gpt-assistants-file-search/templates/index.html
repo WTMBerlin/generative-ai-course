@@ -54,6 +54,7 @@
       max-height: 300px;
       overflow-y: auto;
       font-size: 1.1rem;
+      white-space: pre-wrap;
     }
     .qna {
       margin-bottom: 15px;
@@ -160,11 +161,7 @@
         answerDiv.classList.add('answer');
 
         answerDiv.innerHTML = '';
-        if (data.answers && data.answers.length > 0) {
-          const uniqueAnswers = [...new Set(data.answers)];  
-          answerDiv.innerHTML = `<strong>A:</strong> ${uniqueAnswers.join('<br><br>')}`;
-        }
-
+        answerDiv.innerHTML=`<br><strong>A:</strong> ${data.answers}`
         newQna.appendChild(questionDiv);
         newQna.appendChild(answerDiv);
 
