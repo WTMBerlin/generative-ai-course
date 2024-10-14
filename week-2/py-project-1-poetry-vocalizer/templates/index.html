@@ -43,7 +43,7 @@
     <input type="text" id="word4" placeholder="Word 4" />
     <input type="text" id="word5" placeholder="Word 5" />
     <br />
-    <button onclick="generateSong()">Generate Poem</button>
+    <button onclick="generatePoetry()">Generate Poem</button>
     <button id="voiceOverButton" onclick="voiceOverLyrics()">Voice Over</button>
 
     <h2>Generated Poem:</h2>
@@ -52,7 +52,7 @@
     <script>
       let generatedLyrics = ''
 
-      async function generateSong() {
+      async function generatePoetry() {
         const word1 = document.getElementById('word1').value
         const word2 = document.getElementById('word2').value
         const word3 = document.getElementById('word3').value
@@ -64,7 +64,7 @@
           return
         }
 
-        const response = await fetch('/generate-song', {
+        const response = await fetch('/generate-poetry', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

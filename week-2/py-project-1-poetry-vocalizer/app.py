@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-VOICE_ID = "YOUR_VOICE_ID"
+VOICE_ID = "XB0fDUnXU5powFXDhCwa"
 # or use premade voices in elevenlabs like CwhRBWXzGAHq8TQ4Fs17
 
 
@@ -18,8 +18,8 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/generate-song", methods=["POST"])
-def generate_song():
+@app.route("/generate-poetry", methods=["POST"])
+def generate_poetry():
     data = request.json
     words = data.get("words")
 
@@ -50,8 +50,8 @@ def generate_song():
             return jsonify({"error": "Invalid response from OpenAI API."}), 500
 
     except Exception as e:
-        print(f"Error generating song: {e}")
-        return jsonify({"error": "Failed to generate song."}), 500
+        print(f"Error generating poetry: {e}")
+        return jsonify({"error": "Failed to generate poetry."}), 500
 
 
 @app.route("/voice-over", methods=["POST"])
