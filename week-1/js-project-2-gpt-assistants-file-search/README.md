@@ -31,5 +31,5 @@ OPENAI_API_KEY=your_openai_api_key
 - Start the server:
 
 ```
-node server.js
+npm start
 ```
