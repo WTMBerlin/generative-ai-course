@@ -43,7 +43,7 @@ async function queryOpenAI(question) {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
-      },
+      }
     )
 
     return response.data.choices[0].message.content.trim()
