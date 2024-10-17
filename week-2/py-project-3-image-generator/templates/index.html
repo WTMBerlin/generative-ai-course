@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        h1 {
+            color: #4a90e2;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+
+        #image-result {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        #loading-message {
+            font-size: 1.2em;
+            color: #f39c12;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        #recording-icon {
+            width: 40px;
+            height: 40px;
+            fill: #f39c12; 
+            display: none; 
+            margin-top: 10px;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 50vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            button {
+                font-size: 1em;
+                padding: 8px 16px;
+            }
+
+            img {
+                max-height: 40vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice to Image Generator</h1>
+    <p>Press the button below to record your voice and generate an image based on your input.</p>
+    <button id="record-button" onclick="toggleRecording()">Start Recording</button>
+
+    <svg id="recording-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14c1.656 0 3-1.344 3-3v-6c0-1.656-1.344-3-3-3s-3 1.344-3 3v6c0 1.656 1.344 3 3 3zm7-3h-1c0 3.312-2.688 6-6 6s-6-2.688-6-6h-1c0 3.688 2.832 6.75 6.5 7.188v2.812h-3.5v1h8v-1h-3.5v-2.812c3.668-.438 6.5-3.5 6.5-7.188z"/></svg>
+
+    <div id="loading-message">Wait, image is loading...</div>
+    <div id="image-result"></div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function toggleRecording() {
+            const button = document.getElementById("record-button");
+            const icon = document.getElementById("recording-icon");
+            
+            if (!isRecording) {
+                startRecording();
+                button.textContent = "Stop Recording";
+                icon.style.display = "block"; 
+                isRecording = true;
+            } else {
+                stopRecording();
+                button.textContent = "Start Recording";
+                icon.style.display = "none"; 
+                isRecording = false;
+            }
+        }
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'audio/webm'
+                    });
+                    mediaRecorder.start();
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                audioChunks = [];
+                const formData = new FormData();
+                formData.append('file', audioBlob, 'audio.webm');
+
+                const loadingMessage = document.getElementById('loading-message');
+                loadingMessage.style.display = 'block';
+
+                fetch('/upload-audio', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('image-result').innerHTML = '';
+
+                    const img = document.createElement('img');
+                    img.src = data.imageUrl;
+                    img.alt = "Generated Image";
+                    document.getElementById('image-result').appendChild(img);
+
+                    loadingMessage.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingMessage.style.display = 'none';
+                });
+            };
+        }
+    </script>
+</body>
+</html>
