@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiring App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .candidate {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .candidate p {
+            margin: 5px 0;
+        }
+
+        .loading-message {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hiring App</h1>
+
+        <h2>Generate Embeddings</h2>
+        <form id="generate-embeddings-form">
+            <button type="submit">Generate Embeddings</button>
+            <div id="generate-loading-message" class="loading-message"></div>
+        </form>
+
+        <h2>Query Candidates</h2>
+        <form id="query-form">
+            <input type="text" id="queryText" placeholder="Enter job title or skills" required>
+            <button type="submit">Search</button>
+            <div id="query-loading-message" class="loading-message"></div>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("generate-embeddings-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const loadingMessage = document.getElementById("generate-loading-message");
+            loadingMessage.innerHTML = "Generating embeddings, please wait...";
+
+            const response = await fetch("/generate-embeddings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            loadingMessage.innerHTML = "";
+
+            if (response.ok) {
+                alert("Embeddings generated and stored in Pinecone.");
+            } else {
+                alert("Error generating embeddings.");
+            }
+        });
+
+        document.getElementById("query-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const queryText = document.getElementById("queryText").value;
+
+            const queryLoadingMessage = document.getElementById("query-loading-message");
+            queryLoadingMessage.innerHTML = "Searching for candidates, please wait...";
+
+            const response = await fetch("/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ queryText })
+            });
+
+            const result = await response.json();
+
+            queryLoadingMessage.innerHTML = "";
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+
+            if (result.status === "success") {
+                result.candidates.forEach(candidate => {
+                    const candidateDiv = document.createElement("div");
+                    candidateDiv.className = "candidate";
+                    candidateDiv.innerHTML = `<p><strong>ID:</strong> ${candidate.id}</p>
+                                              <p><strong>Score:</strong> ${candidate.score.toFixed(2)}</p>
+                                              <p><strong>Resume:</strong> ${candidate.text.substring(0, 200)}...</p>`;
+                    resultDiv.appendChild(candidateDiv);
+                });
+            } else {
+                resultDiv.innerHTML = `<p>${result.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
