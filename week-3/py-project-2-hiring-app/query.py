@@ -37,8 +37,9 @@ def generate_response_from_chunks(chunks, user_query, context):
     combined_text = "\n".join(chunk['metadata']['text'][:1000] for chunk in chunks)  # Limit to 1000 characters per resume
 
     prompt = (
-        f"You are an AI assistant. Based on the following resume information"
+        f"You are an AI assistant. Based on the following resume information and previous context"
         f"provide the top candidates for the role '{user_query}'. The candidates should match based on experience, skills, and relevant category.\n\n"
+        f"Previous context:\n{context}\n\n"
         f"Here is the resume data:\n\n{combined_text}\n\nResponse:"
     )
 
