@@ -47,6 +47,7 @@ node app.js
 
 ## Resume Data
 
+Dataset is obtained from [Kaggle](https://www.kaggle.com/datasets/jillanisofttech/updated-resume-dataset).
 The `Resume.csv` file used in this project contains only the resumes of individuals working in the IT sector. Each row in the file represents a candidate with various attributes, such as category and resume details, which are used for generating embeddings and performing queries.
 
 ## License
