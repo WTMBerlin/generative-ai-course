@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hiring App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      input[type='text'] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .result {
+        margin-top: 20px;
+        text-align: left;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table th,
+      table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      table th {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .loading-message {
+        margin-top: 10px;
+        font-style: italic;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hiring App</h1>
+
+      <h2>Generate Embeddings</h2>
+      <form id="generate-embeddings-form">
+        <button type="submit">Generate Embeddings</button>
+        <div id="generate-loading-message" class="loading-message"></div>
+      </form>
+
+      <h2>Query Candidates</h2>
+      <form id="query-form">
+        <input type="text" id="queryText" placeholder="Enter job title or skills" required />
+        <button type="submit">Search</button>
+        <div id="query-loading-message" class="loading-message"></div>
+      </form>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      document.getElementById('generate-embeddings-form').addEventListener('submit', async function (e) {
+        e.preventDefault()
+
+        const loadingMessage = document.getElementById('generate-loading-message')
+        loadingMessage.innerHTML = 'Generating embeddings, please wait...'
+
+        const response = await fetch('/generate-embeddings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        loadingMessage.innerHTML = ''
+
+        if (response.ok) {
+          alert('Embeddings generated and stored in Pinecone.')
+        } else {
+          alert('Error generating embeddings.')
+        }
+      })
+
+      document.getElementById('query-form').addEventListener('submit', async function (e) {
+        e.preventDefault()
+        const queryText = document.getElementById('queryText').value
+
+        const queryLoadingMessage = document.getElementById('query-loading-message')
+        queryLoadingMessage.innerHTML = 'Searching for candidates, please wait...'
+
+        const response = await fetch('/query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ queryText }),
+        })
+
+        const result = await response.json()
+
+        queryLoadingMessage.innerHTML = ''
+
+        const resultDiv = document.getElementById('result')
+        resultDiv.innerHTML = ''
+
+        if (result.status === 'success') {
+          const table = document.createElement('table')
+
+          const thead = document.createElement('thead')
+          const headerRow = document.createElement('tr')
+
+          const headers = ['ID', 'Text']
+          headers.forEach(headerText => {
+            const th = document.createElement('th')
+            th.appendChild(document.createTextNode(headerText))
+            headerRow.appendChild(th)
+          })
+          thead.appendChild(headerRow)
+          table.appendChild(thead)
+
+          const tbody = document.createElement('tbody')
+
+          result.detailedResponse.forEach(candidate => {
+            const row = document.createElement('tr')
+            const idCell = document.createElement('td')
+            idCell.appendChild(document.createTextNode(candidate.id))
+            row.appendChild(idCell)
+
+            const textCell = document.createElement('td')
+            textCell.appendChild(document.createTextNode(candidate.text.substring(0, 200) + '...'))
+            row.appendChild(textCell)
+
+            tbody.appendChild(row)
+          })
+
+          table.appendChild(tbody)
+          resultDiv.appendChild(table)
+        } else {
+          resultDiv.innerHTML = `<p>${result.message}</p>`
+        }
+      })
+    </script>
+  </body>
+</html>
