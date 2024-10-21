@@ -2,6 +2,10 @@
 
 This project implements a resume search application that stores resume data from a CSV file, generates embeddings using OpenAI, and allows for querying the most relevant candidates based on Pinecone vector search.
 
+### Requirements:
+
+    Python 3.11.5
+
 ### Pinecone Setup for Storing Embeddings
 
 To store embeddings, the Pinecone database is used in this project. A free Pinecone account was utilized ([Pinecone.io](https://www.pinecone.io/)) with the following configuration:
@@ -16,19 +20,25 @@ To store embeddings, the Pinecone database is used in this project. A free Pinec
 
 ```
 git clone https://github.com/WTMBerlin/generative-ai-course.git
-
 ```
 
 - Go to the project directory:
 
 ```
-cd week-3/js-project-2-hiring-app
+cd week-3/py-project-1-hiring-app
 ```
 
-- Install dependencies
+- Create and activate a virtual environment:
 
 ```
-npm install
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+- Install required dependencies:
+
+```
+pip install -r requirements.txt
 ```
 
 - Create a .env file then add your keys:
@@ -39,10 +49,16 @@ PINECONE_API_KEY = pinecone_api_key
 PINECONE_HOST = pinecone_host
 ```
 
-- Start the server:
+- Create embeddings from csv file:
 
 ```
-node app.js
+python create-embeddings.py
+```
+
+- Query from csv file:
+
+```
+python query.py "Find software developer with data science experience"
 ```
 
 ## Resume Data
