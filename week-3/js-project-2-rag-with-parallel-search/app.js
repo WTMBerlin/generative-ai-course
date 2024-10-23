@@ -30,23 +30,62 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const extractCategoriesFromText = async text => {
-  const prompt = `Extract or predict the following information from the given resume text:
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'system',
+        content: 'You extract information from resumes and return them in a structured JSON format.',
+      },
+      {
+        role: 'user',
+        content: `Extract or predict the following information from the given resume text:
 - Roles: the roles held by the individual (e.g., Software Engineer, Project Manager).
 - Skills: the technical skills possessed by the individual (e.g., Java, Python, Project Management).
 - Seniority: extract or predict the seniority level from experience, technologies, etc. (e.g., Junior, Mid-level, Senior, or years of experience).
 - Industry: the industry/industries related to the experience (e.g., IT, Finance, Healthcare).
-Return the information as JSON with keys 'roles', 'skills', 'seniority', 'industry'. Ensure none of the fields are empty or unknown, make reasonable predictions if necessary.
 
 Resume:
-${text}`
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: prompt }],
-    max_tokens: 300,
+${text}`,
+      },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'resume_extraction_schema',
+        schema: {
+          type: 'object',
+          properties: {
+            roles: {
+              description: 'Roles held by the individual',
+              type: 'array',
+              items: { type: 'string' },
+            },
+            skills: {
+              description: 'Technical skills of the individual',
+              type: 'array',
+              items: { type: 'string' },
+            },
+            seniority: {
+              description: 'Seniority level',
+              type: 'array',
+              items: { type: 'string' },
+            },
+            industry: {
+              description: 'Related industries',
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+          required: ['roles', 'skills', 'seniority', 'industry'],
+          additionalProperties: false,
+        },
+      },
+    },
   })
 
   const extractedData = JSON.parse(response.choices[0].message.content)
+  console.log('extractedData', extractedData)
   return extractedData
 }
 
@@ -134,9 +173,40 @@ ${candidatesJSON}
 Please provide the matching candidates as a JSON array of objects with keys 'id' and 'text'.`
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: prompt }],
     max_tokens: 1000,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'matching_candidates_schema',
+        schema: {
+          type: 'object',
+          properties: {
+            candidates: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    description: "The ID of the candidate that matches the user's query",
+                  },
+                  text: {
+                    type: 'string',
+                    description: 'The text description of the candidate',
+                  },
+                },
+                required: ['id', 'text'],
+                additionalProperties: false,
+              },
+            },
+          },
+          required: ['candidates'],
+          additionalProperties: false,
+        },
+      },
+    },
   })
 
   const matchingCandidates = JSON.parse(response.choices[0].message.content)
