@@ -94,7 +94,7 @@ const generateCategoryEmbeddings = async categories => {
 
   for (const [category, text] of Object.entries(categories)) {
     const response = await openai.embeddings.create({
-      input: text,
+      input: text.join(', '),
       model: 'text-embedding-ada-002',
     })
     embeddings[category] = response.data[0].embedding
@@ -104,39 +104,40 @@ const generateCategoryEmbeddings = async categories => {
 
 const parseCSVFile = (csvPath, columns) => {
   return new Promise((resolve, reject) => {
-    const data = new Set()
+    const data = []
     let count = 0
 
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', row => {
         count++
-        if (count % 50 === 0) {
-          const text = columns.map(col => `${col}: ${row[col]}`).join('. ')
-          data.add(text)
-        }
+
+        if (count % 50 != 0) return
+
+        data.push({
+          id: count + 1,
+          resume: row.Resume,
+        })
       })
       .on('end', () => {
-        resolve(Array.from(data))
+        resolve(data)
       })
-      .on('error', err => {
-        reject(err)
-      })
+      .on('error', reject)
   })
 }
 
 const storeEmbeddingsInPinecone = async texts => {
   for (let i = 0; i < texts.length; i++) {
     const text = texts[i]
-    const categories = await extractCategoriesFromText(text)
+    const categories = await extractCategoriesFromText(text.resume)
     const categoryEmbeddings = await generateCategoryEmbeddings(categories)
 
     for (const [category, embedding] of Object.entries(categoryEmbeddings)) {
       await index.upsert([
         {
-          id: `text_${i}_${category}`,
+          id: `text_${text.id}_${category}`,
           values: embedding,
-          metadata: { id: i, text, category },
+          metadata: { id: text.id, resume: text.resume, content: categories[category].join(', '), category },
         },
       ])
     }
@@ -158,59 +159,26 @@ app.post('/generate-embeddings', async (req, res) => {
 })
 const generateResponse = async (queryText, topCandidates) => {
   const candidateData = topCandidates.map(candidate => ({
-    id: candidate[1].id,
-    text: candidate[1].text,
+    id: candidate.id,
+    resume: candidate.resume,
   }))
   const candidatesJSON = JSON.stringify(candidateData)
-  const prompt = `User query:
-
-"${queryText}"
-
-Among the following candidates, identify those who match the user's query the most, and return their 'id' and 'text':
+  const prompt = `You are a skilled talent recruiter. You have access to the resumes of the top candidates. Provide a brief summary of each candidate's resume to help your client make an informed decision. Don't skip any candidates—talk about all the candidates you are given.
+  
 Candidates:
-${candidatesJSON}
-
-Please provide the matching candidates as a JSON array of objects with keys 'id' and 'text'.`
+  ${candidatesJSON}
+  `
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',
-    messages: [{ role: 'user', content: prompt }],
+    messages: [
+      { role: 'system', content: prompt },
+      { role: 'user', content: `Who are the best candidates for ${queryText}?` },
+    ],
     max_tokens: 1000,
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'matching_candidates_schema',
-        schema: {
-          type: 'object',
-          properties: {
-            candidates: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'string',
-                    description: "The ID of the candidate that matches the user's query",
-                  },
-                  text: {
-                    type: 'string',
-                    description: 'The text description of the candidate',
-                  },
-                },
-                required: ['id', 'text'],
-                additionalProperties: false,
-              },
-            },
-          },
-          required: ['candidates'],
-          additionalProperties: false,
-        },
-      },
-    },
   })
 
-  const matchingCandidates = JSON.parse(response.choices[0].message.content)
-  return matchingCandidates
+  return response.choices[0].message.content
 }
 
 app.post('/query', async (req, res) => {
@@ -234,16 +202,21 @@ app.post('/query', async (req, res) => {
         candidateScores[match.metadata.id] = candidateScores[match.metadata.id] || {
           id: match.metadata.id,
           score: 0,
-          text: match.metadata.text,
+          resume: match.metadata.resume,
         }
 
         candidateScores[match.metadata.id].score += match.score
       })
     }
 
-    const topCandidates = Object.entries(candidateScores)
-      .sort((a, b) => b[1].score - a[1].score)
+    const topCandidates = Object.values(candidateScores)
+      .sort((a, b) => b.score - a.score)
       .slice(0, 10)
+
+    console.log(`Found ${topCandidates.length} top candidates.`)
+    console.log(
+      `Ordered by score: ${topCandidates.map(candidate => `ID: ${candidate.id}, Score: ${candidate.score}`).join('\n')}`
+    )
 
     if (topCandidates.length === 0) {
       return res.json({

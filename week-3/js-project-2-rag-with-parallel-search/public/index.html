@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -49,6 +49,7 @@
       .result {
         margin-top: 20px;
         text-align: left;
+        white-space: pre-wrap;
       }
 
       table {
@@ -140,41 +141,7 @@
         const resultDiv = document.getElementById('result')
         resultDiv.innerHTML = ''
 
-        if (result.status === 'success') {
-          const table = document.createElement('table')
-
-          const thead = document.createElement('thead')
-          const headerRow = document.createElement('tr')
-
-          const headers = ['ID', 'Text']
-          headers.forEach(headerText => {
-            const th = document.createElement('th')
-            th.appendChild(document.createTextNode(headerText))
-            headerRow.appendChild(th)
-          })
-          thead.appendChild(headerRow)
-          table.appendChild(thead)
-
-          const tbody = document.createElement('tbody')
-
-          result.detailedResponse.candidates.forEach(candidate => {
-            const row = document.createElement('tr')
-            const idCell = document.createElement('td')
-            idCell.appendChild(document.createTextNode(candidate.id))
-            row.appendChild(idCell)
-
-            const textCell = document.createElement('td')
-            textCell.appendChild(document.createTextNode(candidate.text.substring(0, 200) + '...'))
-            row.appendChild(textCell)
-
-            tbody.appendChild(row)
-          })
-
-          table.appendChild(tbody)
-          resultDiv.appendChild(table)
-        } else {
-          resultDiv.innerHTML = `<p>${result.message}</p>`
-        }
+        resultDiv.innerHTML = `<p>${result.detailedResponse}</p>`
       })
     </script>
   </body>
