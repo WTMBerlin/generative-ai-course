@@ -157,7 +157,7 @@
 
           const tbody = document.createElement('tbody')
 
-          result.detailedResponse.forEach(candidate => {
+          result.detailedResponse.candidates.forEach(candidate => {
             const row = document.createElement('tr')
             const idCell = document.createElement('td')
             idCell.appendChild(document.createTextNode(candidate.id))
