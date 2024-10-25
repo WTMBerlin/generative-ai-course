@@ -49,16 +49,10 @@ PINECONE_API_KEY = pinecone_api_key
 PINECONE_HOST = pinecone_host
 ```
 
-- Create embeddings from csv file:
+- Create embeddings and Query from csv file:
 
 ```
-python create-embeddings.py
-```
-
-- Query from csv file:
-
-```
-python query.py "Find software developer with data science experience"
+python app.py "Find software developer with data science experience"
 ```
 
 ## Resume Data
