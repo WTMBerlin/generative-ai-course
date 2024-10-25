@@ -1,6 +1,6 @@
-## Hiring App : Resume Search Application with Pinecone and OpenAI
+## Hiring App : Resume Search Application with Pinecone and OpenAI using Parallel Search
 
-This project implements a resume search application that stores resume data from a CSV file, generates embeddings using OpenAI, and allows for querying the most relevant candidates based on Pinecone vector search.
+This application takes the Resume.csv file as input and generates four embeddings for each individual's resume: roles, industry, skills, and seniority. Then, when a search is performed, a parallel search is conducted to rank and determine the top candidates. These top candidates are sent back to GPT to select the best candidates, ensuring the accuracy of the selections. The final result is displayed in the console.
 
 ### Requirements:
 
@@ -52,7 +52,7 @@ PINECONE_HOST = pinecone_host
 - Create embeddings and Query from csv file:
 
 ```
-python app.py "Find software developer with data science experience"
+python app.py "Find me software developer with data science experience"
 ```
 
 ## Resume Data

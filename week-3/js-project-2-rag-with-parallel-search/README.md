@@ -1,6 +1,6 @@
 ## Hiring App : Resume Search Application with Pinecone and OpenAI using Parallel Search
 
-This application takes the Resume.csv file as input and generates four embeddings for each individual's resume: roles, industry, skills, and seniority. Then, when a search is performed, a parallel search is conducted to rank and determine the top candidates. These top candidates are sent back to GPT to select the best candidates, ensuring the accuracy of the selections. The final result is displayed in a table.
+This application takes the Resume.csv file as input and generates four embeddings for each individual's resume: roles, industry, skills, and seniority. Then, when a search is performed, a parallel search is conducted to rank and determine the top candidates. These top candidates are sent back to GPT to select the best candidates, ensuring the accuracy of the selections. The final result is displayed in the frontend.
 
 ### Pinecone Setup for Storing Embeddings
 
@@ -34,7 +34,7 @@ npm install
 - Create a .env file then add your keys:
 
 ```
-OPENAI_API_KEY=your_openai_api_key
+OPENAI_API_KEY = your_openai_api_key
 PINECONE_API_KEY = pinecone_api_key
 PINECONE_HOST = pinecone_host
 ```

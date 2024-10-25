@@ -102,7 +102,7 @@ const generateCategoryEmbeddings = async categories => {
   return embeddings
 }
 
-const parseCSVFile = (csvPath, columns) => {
+const parseCSVFile = csvPath => {
   return new Promise((resolve, reject) => {
     const data = []
     let count = 0
@@ -147,9 +147,8 @@ const storeEmbeddingsInPinecone = async texts => {
 
 app.post('/generate-embeddings', async (req, res) => {
   const csvPath = path.join(__dirname, 'public', 'Resume.csv')
-  const columns = ['Category', 'Resume']
   try {
-    const data = await parseCSVFile(csvPath, columns)
+    const data = await parseCSVFile(csvPath)
     await storeEmbeddingsInPinecone(data)
     res.send('Embeddings generated and stored in Pinecone.')
   } catch (error) {
@@ -215,7 +214,9 @@ app.post('/query', async (req, res) => {
 
     console.log(`Found ${topCandidates.length} top candidates.`)
     console.log(
-      `Ordered by score: ${topCandidates.map(candidate => `ID: ${candidate.id}, Score: ${candidate.score}`).join('\n')}`
+      `Ordered by score: \n${topCandidates
+        .map(candidate => `ID: ${candidate.id}, Score: ${candidate.score}`)
+        .join('\n')}`
     )
 
     if (topCandidates.length === 0) {

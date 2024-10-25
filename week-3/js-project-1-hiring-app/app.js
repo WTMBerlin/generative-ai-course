@@ -37,85 +37,73 @@ const generateEmbedding = async text => {
   return response.data[0].embedding
 }
 
-const generateResponseFromChunks = async (chunks, userQuery, context) => {
-  const combinedText = chunks.map(chunk => chunk.metadata.text).join('\n')
-
-  const prompt = `
-    You are an AI assistant. Based on the following resume information and previous context,
-    provide the top candidates for the role '${userQuery}'. The candidates should match based on experience, skills, and relevant category.
-
-    Previous context: ${context}
-
-    Here is the resume data:\n${combinedText}
-
-    Response:
+const generateResponse = async (queryText, topCandidates) => {
+  const candidateData = topCandidates.map(candidate => ({
+    id: candidate.id,
+    resume: candidate.resume,
+  }))
+  const candidatesJSON = JSON.stringify(candidateData)
+  const prompt = `You are a skilled talent recruiter. You have access to the resumes of the top candidates. Provide a brief summary of each candidate's resume to help your client make an informed decision. Don't skip any candidates—talk about all the candidates you are given.
+  
+Candidates:
+  ${candidatesJSON}
   `
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4o',
     messages: [
-      {
-        role: 'system',
-        content: 'You are an AI assistant providing detailed responses based on given resume data.',
-      },
-      { role: 'user', content: prompt },
+      { role: 'system', content: prompt },
+      { role: 'user', content: `Who are the best candidates for ${queryText}?` },
     ],
-    max_tokens: 500,
+    max_tokens: 1000,
   })
 
   return response.choices[0].message.content
 }
 
-const parseCSVFile = (csvPath, columns) => {
+const parseCSVFile = csvPath => {
   return new Promise((resolve, reject) => {
-    const data = new Set()
+    const data = []
     let count = 0
 
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', row => {
         count++
-        if (count % 45 === 0) {
-          const text = columns.map(col => `${col}: ${row[col]}`).join('. ')
-          data.add(text)
-        }
+
+        if (count % 50 != 0) return
+
+        data.push({
+          id: count + 1,
+          resume: row.Resume,
+        })
       })
       .on('end', () => {
-        resolve(Array.from(data))
+        resolve(data)
       })
-      .on('error', err => {
-        reject(err)
-      })
+      .on('error', reject)
   })
 }
 
 const storeEmbeddingsInPinecone = async texts => {
-  const embeddings = []
   for (let i = 0; i < texts.length; i++) {
     const text = texts[i]
-    const embedding = await generateEmbedding(text)
-    embeddings.push(embedding)
+    const embedding = await generateEmbedding(text.resume)
     await index.upsert([
       {
         id: `text_${i + 1}`,
         values: embedding,
-        metadata: { text },
+        metadata: { id: text.id, resume: text.resume },
       },
     ])
   }
   console.log('Embeddings generated and stored in Pinecone.')
-
-  console.log('First 3 Embeddings:')
-  for (let i = 0; i < Math.min(3, embeddings.length); i++) {
-    console.log(`Embedding ${i + 1}:`, embeddings[i])
-  }
 }
 
 app.post('/generate-embeddings', async (req, res) => {
   const csvPath = path.join(__dirname, 'public', 'Resume.csv')
-  const columns = ['Category', 'Resume']
   try {
-    const data = await parseCSVFile(csvPath, columns)
+    const data = await parseCSVFile(csvPath)
     await storeEmbeddingsInPinecone(data)
     res.send('Embeddings generated and stored in Pinecone.')
   } catch (error) {
@@ -126,7 +114,6 @@ app.post('/generate-embeddings', async (req, res) => {
 
 app.post('/query', async (req, res) => {
   const { queryText } = req.body
-  let context = ''
   try {
     const queryEmbedding = await generateEmbedding(queryText)
     const results = await index.query({
@@ -134,34 +121,38 @@ app.post('/query', async (req, res) => {
       topK: 10,
       includeMetadata: true,
     })
-
+    const topCandidates = []
     const scoreThreshold = 0.75
-    const filteredMatches = results.matches.filter(match => match.score > scoreThreshold)
-
-    if (filteredMatches.length > 0) {
-      filteredMatches.forEach((match, idx) => {
-        console.log(`Result ${idx + 1}:`)
-        console.log(`Score: ${match.score}`)
-      })
-
-      const detailedResponse = await generateResponseFromChunks(filteredMatches, queryText, context)
-      context += `\nUser query: ${queryText}\nResponse: ${detailedResponse}\n`
-
-      res.json({
-        status: 'success',
-        candidates: filteredMatches.map(match => ({
-          id: match.id,
+    results.matches.forEach(match => {
+      if (match.score > scoreThreshold) {
+        topCandidates.push({
+          id: match.metadata.id,
           score: match.score,
-          text: match.metadata.text,
-        })),
-        detailedResponse,
-      })
-    } else {
-      res.json({
+          resume: match.metadata.resume,
+        })
+      }
+    })
+
+    console.log(`Found ${topCandidates.length} top candidates.`)
+    console.log(
+      `Ordered by score: \n${topCandidates
+        .map(candidate => `ID: ${candidate.id}, Score: ${candidate.score}`)
+        .join('\n')}`
+    )
+
+    if (topCandidates.length === 0) {
+      return res.json({
         status: 'notfound',
         message: 'No relevant matches found.',
       })
     }
+
+    const detailedResponse = await generateResponse(queryText, topCandidates)
+    res.json({
+      status: 'success',
+      candidates: topCandidates,
+      detailedResponse,
+    })
   } catch (error) {
     console.error('Error querying Pinecone:', error)
     res.status(500).send('Error querying Pinecone.')
