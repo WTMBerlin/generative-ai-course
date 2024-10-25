@@ -34,7 +34,7 @@ npm install
 - Create a .env file then add your keys:
 
 ```
-OPENAI_API_KEY=your_openai_api_key
+OPENAI_API_KEY = your_openai_api_key
 PINECONE_API_KEY = pinecone_api_key
 PINECONE_HOST = pinecone_host
 ```
